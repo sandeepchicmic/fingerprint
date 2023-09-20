@@ -1,0 +1,315 @@
+<?php 
+
+// Fingerprint Listing
+if(isset($_GET['fingerprint'])&& !empty($_GET['fingerprint'])){
+$all_finger = $this->getImagesById()->getData();
+if(!empty($all_finger)){ ?>
+<style>
+.figure_img_list {width:100%; float:left; }
+.back_btn { float:right; background:#838266; padding:6px 10px; color:#fff; font-size:14px; text-decoration:none; border-radius: 4px; margin-bottom: 10px;}
+.back_btn i{margin-right:6px}
+.figure_div { border:1px solid #dfe2e5; border-bottom:0; width:100%; float:left; border-right:0; }
+.figure_div h6{border-bottom:1px solid #dfe2e5; padding:15px 20px; float:left; width:100%; margin:0; font-size: 16px; }
+.figure_div ul{ float:left; width:100%; list-style:none; padding:0; margin:0; }
+.figure_div ul li{ float:left; width:33.333%; padding:16px; border-width:0 1px 1px 0; border-style:solid; border-color:#dfe2e5; margin-bottom: 0; }
+.figure_div ul li img{ max-width:100%; width:100%; border:1px solid #dfe2e5; float: left;}
+button.lg-prev.lg-icon, .lg-next.lg-icon{ height: 46px;}
+span.lg-close.lg-icon { color: #fff; background: #343535;}
+/**.figure_div ul li:nth-child(3n){ border-right:0;}**/
+@media (max-width:767px){
+  .figure_div ul li{width:50%; padding: 14px;}
+}
+@media (max-width:379px){
+  .figure_div ul li{width:100%;}
+}
+</style>
+<script type="text/javascript" src="<?php echo $block->getBaseUrl()."api/lightgallery/jquery-2.2.4.min.js"; ?>"></script>
+<script type="text/javascript" src="<?php echo $block->getBaseUrl()."api/lightgallery/lightgallery.js"; ?>"></script>
+<link rel="stylesheet" href="<?php echo $block->getBaseUrl()."api/lightgallery/lightgallery.css"; ?>">
+<script>
+   require.config({
+       map: {
+           '*': {
+               'lightGallery':  "https://updurns.com/api/lightgallery/lightgallery.js"
+           }
+       }
+   });
+</script>
+ <script type="application/javascript">
+    requirejs(['jquery','lightGallery'],function($, lightGallery){
+    $(document).ready(function(){
+        $('.lightgallery').lightGallery();
+    });
+});
+</script>
+
+<div class="figure_img_list">
+  <a href="javascript:history.back()" class="back_btn"><i><img src="<?php echo $block->escapeUrl($block->getViewFileUrl('Smartwave_NewFingerprints::img/back_icon.png')); ?>" alt=""></i> Back</a>
+  <div class="figure_div">
+    <h6><?=$all_finger[0]['name'];?></h6>
+    <ul class="lightgallery">
+        <!--<li><a rel="example_group" href="https://amazingdepartures.com/api/customer_images/1502883007-2030234643.jpg"><img src="https://amazingdepartures.com/api/thumbs/1502883007-2030234643.jpg" alt=""/></a></li>-->
+        <?php foreach($all_finger as $key=>$value) { ?>
+            <li data-src="<?php echo $block->getBaseUrl()."api/customer_images/".$value['image_name']; ?>"><img src="<?php echo $block->getBaseUrl()."api/thumbs/".$value['image_name']; ?>" alt=""></li>
+        <?php } ?>
+   </ul>
+  </div>
+</div>
+  <?php
+}else{
+  echo "no fingerprint found";
+}
+
+}
+
+// Customer Listing 
+else { ?>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css">
+
+<?php $customer_fingerprint_detail = $this->getFingerprintsData()->getData(); 
+/*echo "<pre>";
+print_r($customer_fingerprint_detail)."--";
+exit;*/
+?>
+<div class="left-side-menu" style="width: 64px;position: absolute;z-index:1">
+<div class="import-icon" style="width:25px;cursor: pointer;z-index:1;float:left;">
+<img src="<?php echo $this->getViewFileUrl('Smartwave_NewFingerprints::img/csv_icon.png'); ?>" style="width:25px;"/>
+ </a>
+
+</div>
+ <a href="<?php echo $block->getBaseUrl()."insertnewfingerprints/customer/addfingerprint";?>" style="float:right;z-index:1;">
+<img src="<?php echo $this->getViewFileUrl('Smartwave_NewFingerprints::img/add_icon.png'); ?>" style="width:25px;"/>
+</a>
+</div>
+<div class="table-responsive">
+<table id="myTable" class="table table-bordered">
+    <thead>
+      <tr>    
+       <th style="display:none;">ID</th>
+        <th>UPD ID</th>
+        <th>Case ID (Optional)</th>
+        <th>Deceased Name</th>
+        <th>Date of Birth</th>
+        <th>Customer Name</th>
+        <th>Customer Email</th>
+        <th>Fingerprint</th>
+        <th>Verified Date</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <?php if(!empty($customer_fingerprint_detail)):
+        
+        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+        $timezoneInterface = $objectManager->create('\Magento\Framework\Stdlib\DateTime\TimezoneInterface');
+        
+        foreach($customer_fingerprint_detail as $key=>$value): ?>
+      <tr>
+          <td style="display:none;"><?=$value['id'];?></td>
+          <td><?=$value['unique_upd_id']!=""?$value['unique_upd_id'] : "-";?></td>
+        <td><?=$value['agent_id'];?></td>
+        <td><?=$value['name'];?></td>
+        <td><?=$value['date'];?></td>
+         <td><?=$value['first_name'];?></td>
+          <td><?=$value['email'];?></td> 
+          <td>
+            <?php if($value['countFinger']>0){?>
+            <a href='<?php echo $block->getBaseUrl()."newfingerprints/customer/?fingerprint=".$value['id']; ?>' style="width:30px;margin:auto;display:block">
+            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Capa_1" x="0px" y="0px" viewBox="0 0 54.308 54.308" style="enable-background:new 0 0 54.308 54.308;" xml:space="preserve" class=""><g><g>
+  <path d="M53.583,25.902c-5.447-9.413-15.574-15.26-26.429-15.26S6.173,16.489,0.725,25.902L0,27.154   l0.725,1.252c5.447,9.413,15.574,15.26,26.429,15.26s20.981-5.847,26.429-15.26l0.725-1.252L53.583,25.902z M27.425,36.032   c-5.342,0-9.688-4.346-9.688-9.688s4.346-9.688,9.688-9.688s9.688,4.346,9.688,9.688S32.767,36.032,27.425,36.032z M5.826,27.154   c2.304-3.497,5.412-6.325,8.99-8.306c-1.312,2.198-2.08,4.756-2.08,7.496c0,3.911,1.546,7.459,4.046,10.094   C12.377,34.469,8.542,31.276,5.826,27.154z M38.479,35.985c2.256-2.583,3.634-5.95,3.634-9.641c0-2.537-0.646-4.925-1.783-7.009   c3.225,1.948,6.03,4.599,8.151,7.819C45.964,30.975,42.483,33.995,38.479,35.985z" data-original="#010002" class="active-path" data-old_color="#ABA4B2" fill="#656068"/>
+</g></g> </svg>
+
+<?php }else{
+ echo "<span class='no-image'>No-Image</span>";
+}?>
+</td>
+<td><?php echo $value['verified_date']!=""?$timezoneInterface->date($value['verified_date'])->format('m/d/Y') : "-"; ?></td>
+<td><a href="/editfingerprints/customer/editfingerprint/?fingerprint=<?=$value['id']; ?>">Edit</a></td>
+      </tr>
+    <?php endforeach;?>
+    <?php endif; ?>
+    
+    </tbody>
+  </table>
+ </div> 
+  <div id="popup-modal" class="import_fingerprint" style="position:relative;z-index:99999;">
+   <form method="post"  enctype="multipart/form-data">
+    <input type="file" name="import_csv" />
+    <input type="submit" name="Import" />
+   </form>
+   <a href="<?php echo $this->getViewFileUrl('Smartwave_NewFingerprints::images/importcsv.csv'); ?>" class="download_csv">Download CSV Sample</a>
+</div>
+  <script>
+   require.config({
+       map: {
+           '*': {
+               'dataTable':  'https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js'
+           }
+       }
+   });
+</script>
+ <script type="application/javascript">
+requirejs(['jquery','dataTable'],function($, dataTable){
+    $(document).ready(function(){
+        $('#myTable').DataTable({
+            "order": [[ 0, "desc" ]]
+        } );
+    });
+});
+</script>
+<script>
+    require(
+        [
+            'jquery',
+            'Magento_Ui/js/modal/modal'
+        ],
+        function(
+            $,
+            modal
+        ) {
+            var options = {
+                type: 'popup',
+                responsive: true,
+                innerScroll: true,
+                title: 'Import Fingerprints',
+                buttons: [{
+                    text: $.mage.__('Close'),
+                    class: 'd-none',
+                    click: function () {
+                        this.closeModal();
+                    }
+                }]
+            };
+
+            var popup = modal(options, $('#popup-modal'));
+            $(".import-icon").on('click',function(){
+               $('#popup-modal').modal('openModal');
+             });
+           
+        }
+    );
+</script>
+  <?php 
+// echo "<pre>";
+// print_r($this->getFingerprintsData()->getData());
+// echo "</pre>";
+?>
+
+
+<style>
+table.table.no-footer {border-bottom:0;}
+table.dataTable thead th, table.table-bordered > tbody > tr > td { border-left: 0; border-bottom: 0; border-right: 0; border-color: #dfe2e5; padding:16px 10px; color: #354052; font-weight: 300; font-size: 13px; }
+table.dataTable thead th {font-weight: 600; color:#7f8fa4;}
+table.table th { border-top:0;}
+table.dataTable.no-footer {border-bottom: 1px solid #dfe2e5; border-color: #dfe2e5; border-radius: 4px;}
+table td a svg{width:17px;}
+table.table-bordered > tbody > tr > td:last-child {text-align: left;}
+table.table-bordered > tbody > tr > td:last-child a {float: left;}
+.dataTables_filter input {border-radius: 4px;}
+#myTable_filter span{float: left;}
+.dataTables_wrapper .dataTables_filter input { width: 210px; border-radius: 4px; border-color: #dfe2e5;}
+.dataTables_wrapper span { float: left; padding-top: 8px;}
+.dataTables_wrapper select {float: left; width: 74px; margin: 0 8px 0 34px; border-color: #dfe2e5;}
+table#myTable { margin: 10px 0 0;  float: left; width: 100%;}
+div#myTable_paginate { margin-top:18px; border: 1px solid #dfe2e5; border-radius: 3px; padding:0; height:38px;}
+a#myTable_previous, a#myTable_next {
+    padding: 6px 15px;
+    margin-left: 0;
+    font-size: 0;
+    position: relative;
+    display: inline-block;
+    border: 0!important;
+}
+#myTable_paginate span {
+    float: none;
+    display: inline-block;
+    padding: 0;
+    border-left: 1px solid #dfe2e5;
+    border-right: 1px solid #dfe2e5;
+}
+a#myTable_next:before {
+  content: '';
+  border-top:8px solid transparent;
+  border-bottom:8px solid transparent;  
+  border-left:8px solid #c6c2c2;
+  position:relative;
+  top:-4px;
+}
+a#myTable_previous:before {
+  content: '';
+  border-top: 8px solid transparent;
+  border-bottom: 8px solid transparent;  
+  border-right:8px solid #c6c2c2; 
+  position:relative;
+  top:-3px;
+}
+.dataTables_wrapper .dataTables_paginate .paginate_button { font-weight: 600; padding: 10px 15px; border-width:0 0 0 1px!important; border-color:#dfe2e5; border-style:solid; color:#9a9fa8; border-radius:0; }
+.dataTables_wrapper .dataTables_paginate .paginate_button:last-child { border-right-width:1px;}
+.dataTables_wrapper .dataTables_paginate .paginate_button.current, .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+    border-radius: 0; color:#354052;
+  background: transparent;
+    font-weight: 600;
+    border: 0;
+}
+div#myTable_length { float: left; margin-left: 38px;}
+span.no-image {color: #ff0000;}
+
+.modal-popup .modal-inner-wrap {width: 480px;}
+.modal-popup .modal-title {margin-top: 14px;font-size: 22px;}
+.import_fingerprint input[type="file"] {width:69%; display: inline-block; border: 1px solid #ccc7c7; padding: 8px;}
+.import_fingerprint input[type="submit"] { display: inline-block; width: 30%; border-radius: 0; border: 0; background:#7d2c28; color: #fff; padding: 10px 0;}
+.modal-popup .modal-footer { padding-bottom: 1rem; padding-top: 1rem;}
+.modal-popup .modal-header {padding-top: 1rem;}
+.modal-slide .modal-header, .modal-slide .modal-content, .modal-slide .modal-footer {padding: 0 2.6rem 1.6rem;}
+.modal-popup .modal-header, .modal-popup .modal-content { padding-left:1rem; padding-right:1rem;}
+.modal-popup.modal-slide .modal-footer{border-top: 1px solid #ddd;padding-top:.6rem;}
+.modal-slide .modal-header, .modal-slide .modal-content, .modal-slide .modal-footer { padding: 0 1.2rem;}
+/*Download CSV*/
+footer.modal-footer {display: none;}
+.d-none {display: none;}
+.import_fingerprint { text-align: center;}
+a.download_csv { display: inline-block; margin: 10px auto 0; padding: 7px 15px; background: #6b6a6a; color: #fff; border-radius: 2px; min-width: 160px; text-align: center;margin-bottom:20px;}
+</style>
+<?php /*$fingerprints = $this->getFingerprintsData()->getData(); ?>
+<div class="block block-dashboard-info">    
+    <div class="block-content">
+        <div class="box box-information latest-urns fingerprint-section">
+            <strong class="box-title">
+                <span><?= $block->escapeHtml(__('My FingerPrints')) ?></span>
+            </strong>
+            <div class="box-content">
+            <div>
+                <?php if(count($fingerprints)>0) : ?>
+                <?php foreach ($fingerprints as $fingerprint) : ?>               
+                    <div class="item-box" style="display:block;">
+			    <?php $fpimageUrl = $this->getFingerprintsDirectory().$fingerprint['image']; ?>
+                            <span class="imgbx">
+                                <img src="<?php echo $fpimageUrl; ?>" alt="<?php echo $fingerprint['name']; ?>" />
+                            </span>
+			    <?php if(isset($fingerprint['name']) && $fingerprint['name']!= '') : ?>
+                            <h3><strong><?php echo __('Name of deceased : '); ?></strong><?php echo $fingerprint['name']; ?></h3>
+			    <?php endif; ?>
+			    <?php if(isset($fingerprint['agent_id']) && $fingerprint['agent_id']!= '') : ?>
+                            <h3><strong><?php echo __('ID : '); ?></strong><?php echo $fingerprint['agent_id']; ?></h3>
+			    <?php endif; ?>
+			    <?php if(isset($fingerprint['date']) && $fingerprint['date']!= '') : ?>
+                            <h3><strong><?php echo __('Date : '); ?></strong><?php echo $fingerprint['date']; ?></h3>
+			    <?php endif; ?>
+			    <?php if(isset($fingerprint['first_name']) && $fingerprint['first_name']!= '') : ?>
+                            <h3><strong><?php echo __('Customer Name : '); ?></strong><?php echo $fingerprint['first_name']; ?></h3>
+			    <?php endif; ?>
+			    <?php if(isset($fingerprint['email']) && $fingerprint['email']!= '') : ?>
+                            <h3><strong><?php echo __('Customer Email : '); ?></strong><?php echo $fingerprint['email']; ?></h3>
+			    <?php endif; ?>
+                    </div>
+                <?php endforeach; ?>
+		<?php else : ?>
+		<?php $printurl = $block->getUrl('prints2'); ?>
+		<div class="message info empty"><div><?php echo __('<a href="%1">Learn More About Our the UPD Print Capture System Here >></a>', $printurl) ?></div></div>
+		<?php endif; ?>
+            </div>
+            </div>
+        </div>
+    </div> 
+</div>
+*/ } ?>

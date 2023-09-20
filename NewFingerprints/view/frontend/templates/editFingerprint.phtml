@@ -1,0 +1,61 @@
+<?php $deceased = $block->getDeceasedData();
+
+$dob = "";
+if(!empty($deceased[0]['date'])){
+$dt = explode("/", $deceased[0]['date']);
+$dob = $dt[2]."-".$dt[0]."-".$dt[1]; }
+?>
+<div>
+<form action="" method="post" enctype="multipart/form-data">
+  <div class="form-group">
+    <label for="deceased_name">Deceased Name:</label>
+    <input type="text" class="form-control" name="deceased_name" id="deceased_name" value="<?=$deceased[0]['name'];?>" required>
+  </div>
+  <div class="form-group">
+    <label for="id-optional">CaseID(Optional):</label>
+    <input type="text" class="form-control" name="ID" value="<?=$deceased[0]['agent_id'];?>" id="id-optional">
+  </div>
+  <div class="form-group">
+    <label for="birth-date">Date Of Birth</label>
+    <input type="date" class="form-control" name="birth_date" id="birth-date" value="<?=$dob;?>" />
+  </div>
+  <div class="form-group">
+    <label for="customer-name">Customer Name(Optional):</label>
+    <input type="text" class="form-control" name="customer_name" id="customer-name" value="<?=$deceased[0]['first_name'];?>" />
+  </div>
+  <div class="form-group">
+    <label for="customer-email">Customer Email(Optional):</label>
+    <input type="email" class="form-control" name="customer_email" id="customer-email" value="<?=$deceased[0]['email'];?>" />
+  </div>
+  <!-- <div class="form-group">
+    <label for="customer-email">Finger Print Image:</label>
+    <input type="file"class="form-control"  name="fileToUpload" id="fileToUpload" onchange="loadFile(event)" accept="image/x-png,image/jpeg">
+    <img id="output" style="width:150px;margin-top:10px"  />
+  </div>-->
+<a class="cancel-btn btn btn-default" href="<?php echo $block->getBaseUrl().'newfingerprints/customer/';?>">Cancel</a>
+<button type="submit" class="btn btn-default">Save</button>
+</form>
+</div>
+<style>
+   .cancel-btn{ border: 1px solid #ccc;
+    color: #777 !important;
+    line-height: 30px;
+    padding: 0 12px;
+    height: 32px;
+    background-color: #fff;
+  }
+  .cancel-btn:hover{
+    color:white !important;
+    border-color: #792620;
+  }
+  </style>
+  <script type="text/javascript">
+  var loadFile = function(event) {
+    var reader = new FileReader();
+    reader.onload = function(){
+      var output = document.getElementById('output');
+      output.src = reader.result;
+    };
+    reader.readAsDataURL(event.target.files[0]);
+  };
+</script>

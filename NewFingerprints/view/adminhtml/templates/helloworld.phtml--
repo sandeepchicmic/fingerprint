@@ -1,0 +1,269 @@
+<?php 
+
+// Fingerprint Listing
+if(isset($_GET['fingerprint'])&& !empty($_GET['fingerprint'])){
+$all_finger=$this->getImagesById()->getData();
+if(!empty($all_finger)){ ?>
+<style>
+.figure_img_list {width:100%; float:left; }
+.back_btn { float:right; background:#838266; padding:6px 10px; color:#fff; font-size:14px; text-decoration:none; border-radius: 4px; margin-bottom: 10px;}
+.back_btn i{margin-right:6px}
+.figure_div { border:1px solid #dfe2e5; border-bottom:0; width:100%; float:left; border-right:0; }
+.figure_div h6{border-bottom:1px solid #dfe2e5; padding:15px 20px; float:left; width:100%; margin:0; font-size: 16px; }
+.figure_div ul{ float:left; width:100%; list-style:none; padding:0; margin:0; }
+.figure_div ul li{ float:left; width:33.333%; padding:16px; border-width:0 1px 1px 0; border-style:solid; border-color:#dfe2e5; margin-bottom: 0; }
+.figure_div ul li img{ max-width:100%; width:100%; border:1px solid #dfe2e5; float: left;}
+button.lg-prev.lg-icon, .lg-next.lg-icon{ height: 46px;}
+span.lg-close.lg-icon { color: #fff; background: #343535;}
+/**.figure_div ul li:nth-child(3n){ border-right:0;}**/
+@media (max-width:767px){
+  .figure_div ul li{width:50%; padding: 14px;}
+}
+@media (max-width:379px){
+  .figure_div ul li{width:100%;}
+}
+
+</style>
+<script type="text/javascript" src="<?php echo $block->getBaseUrl()."api/lightgallery/jquery-2.2.4.min.js"; ?>"></script>
+<script type="text/javascript" src="<?php echo $block->getBaseUrl()."api/lightgallery/lightgallery.js"; ?>"></script>
+<link rel="stylesheet" href="<?php echo $block->getBaseUrl()."api/lightgallery/lightgallery.css"; ?>">
+<script>
+   require.config({
+       map: {
+           '*': {
+               'lightGallery':  "https://updurns.com/api/lightgallery/lightgallery.js"
+           }
+       }
+   });
+</script>
+ <script type="application/javascript">
+    requirejs(['jquery','lightGallery'],function($, lightGallery){
+    $(document).ready(function(){
+        $('.lightgallery').lightGallery();
+    });
+});
+</script>
+<div class="figure_img_list">
+  <a href="javascript:history.back()" class="back_btn"><i><img src="<?php echo $block->escapeUrl($block->getViewFileUrl('Smartwave_NewFingerprints::img/back_icon.png')); ?>" alt=""></i> Back</a>
+  <div class="figure_div">
+    <h6><?=$all_finger[0]['name'];?></h6>
+    <ul class="lightgallery">
+        <?php foreach($all_finger as $key=>$value) { ?>
+            <li data-src="<?php echo $block->getBaseUrl()."api/customer_images/".$value['image_name']; ?>"><img src="<?php echo $block->getBaseUrl()."api/thumbs/".$value['image_name']; ?>" alt=""></li>
+        <?php } ?>
+   </ul>
+  </div>
+</div>
+  <?php
+}else{
+  echo "no fingerprnit found";
+}
+
+}
+
+// Customer Listing 
+else { ?>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css">
+
+<?php $customer_fingerprint_detail=$this->getAllUserFingerprintsData()->getData();?>
+
+<!-- <span class="export_csv"> -->
+  <a href="<?php echo $block->getBaseUrl()."admin/adminfingerprintexport/fingerprint/fingerprintexport";?>" class="export_csv">
+	<img src="<?php echo $this->getViewFileUrl('Smartwave_NewFingerprints::images/csv_icon.png'); ?>" alt="CSV" style="width:30px" />
+	<!-- <span>Export CSV</span> -->
+  </a>
+</div>
+
+<div class="table-responsive">
+<table id="myTable" class="table table-bordered finger_table">
+    <thead>
+      <tr>    
+      <th style="display:none">ID</th>
+        <th>Case ID(Optional)</th>
+        <th>UPD ID</th>
+        <th>Agent Email</th>
+        <th>Deceased Name</th>
+        <th>Date of Birth</th>
+        <th>Customer Name</th>
+        <th>Customer Email</th>
+         <th>Date Added</th>
+         <th>Verified Date</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <?php if(!empty($customer_fingerprint_detail)):
+        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+        $timezoneInterface = $objectManager->create('\Magento\Framework\Stdlib\DateTime\TimezoneInterface');
+      
+        foreach($customer_fingerprint_detail as $key=>$value): ?>
+      <tr>
+           <td style="display:none;"><?=$value['id'];?></td>
+        <td><?=$value['agent_id'];?></td>
+        <td><?php echo $value['unique_upd_id']!=""?$value['unique_upd_id'] : "-"; ?></td>
+         <td><?=$value['agent_email'];?></td>
+        <td><?=$value['name'];?></td>
+        <td><?=$value['date'];?></td>
+         <td><?=$value['first_name'];?></td>
+          <td><?=$value['email'];?></td> 
+           <td><?=$timezoneInterface->date($value['date_added'])->format('m/d/Y');?></td> 
+          <td><?php echo $value['verified_date']!=""?$timezoneInterface->date($value['verified_date'])->format('m/d/Y') : "-"; ?></td>
+          <td>
+            <?php if($value['countFinger']>0){?>
+            	<select class="fingerprint-status" data-fingerid='<?php echo $value['id'];?>'>
+            		<option value="0" <?php echo $value['status']?'':'selected="selected"';?>>Pending</option>
+            		<option value="1" <?php echo $value['status']?'selected="selected"':'';?>>Completed</option>
+            		
+            	</select>
+            <a href='<?php echo $block->getBaseUrl()."admin/adminfingerprint/fingerprint/?fingerprint=".$value['id']; ?>' style="width:30px;margin:auto;display:block">
+            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Capa_1" x="0px" y="0px" viewBox="0 0 54.308 54.308" style="enable-background:new 0 0 54.308 54.308;" xml:space="preserve" class=""><g><g>
+				<path d="M53.583,25.902c-5.447-9.413-15.574-15.26-26.429-15.26S6.173,16.489,0.725,25.902L0,27.154   l0.725,1.252c5.447,9.413,15.574,15.26,26.429,15.26s20.981-5.847,26.429-15.26l0.725-1.252L53.583,25.902z M27.425,36.032   c-5.342,0-9.688-4.346-9.688-9.688s4.346-9.688,9.688-9.688s9.688,4.346,9.688,9.688S32.767,36.032,27.425,36.032z M5.826,27.154   c2.304-3.497,5.412-6.325,8.99-8.306c-1.312,2.198-2.08,4.756-2.08,7.496c0,3.911,1.546,7.459,4.046,10.094   C12.377,34.469,8.542,31.276,5.826,27.154z M38.479,35.985c2.256-2.583,3.634-5.95,3.634-9.641c0-2.537-0.646-4.925-1.783-7.009   c3.225,1.948,6.03,4.599,8.151,7.819C45.964,30.975,42.483,33.995,38.479,35.985z" data-original="#010002" class="active-path" data-old_color="#ABA4B2" fill="#656068"/>
+				</g></g> </svg>
+	  </a>
+	<?php }else{
+	 echo "<span class='no-image'>No-Image</span>";
+	}?>
+	</td>
+      </tr>
+    <?php endforeach;?>
+    <?php endif; ?>
+    
+    </tbody>
+  </table>
+</div>
+
+  <script>
+   require.config({
+       map: {
+           '*': {
+               'dataTable':  'https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js'
+           }
+       }
+   });
+</script>
+ <script type="application/javascript">
+requirejs(['jquery','dataTable'],function($, dataTable){
+    $(document).ready(function(){
+        $('#myTable').DataTable({
+				language: {
+					searchPlaceholder: "Search"
+				},
+				order: [[ 0, "desc" ]],
+				autoWidth: false
+	    });
+    });
+});
+
+</script>
+<script type="text/javascript">
+    require(["jquery"],function($) {
+        $(document).ready(function() {
+        $('select.fingerprint-status').on('change',function(){
+          $(this).val();
+           var customurl = "<?php echo $this->getUrl().'admin/adminfingerprintstatus/fingerprint/fingerprintstatus'?>";
+            $.ajax({
+                url: customurl,
+                type: 'POST',
+                dataType: 'json',
+                data: {
+                    status: $(this).val(),
+                    id: $(this).data('fingerid'),
+                },
+            complete: function(response) {             
+                 location.reload()
+                },
+                error: function (xhr, status, errorThrown) {
+                    console.log('Error happens. Try again.');
+                }
+            });
+        })
+           
+        });
+    });
+</script>
+  <?php 
+// echo "<pre>";
+// print_r($this->getFingerprintsData()->getData());
+// echo "</pre>";
+?>
+
+
+<style>
+.table-responsive {overflow: auto;}
+table.table.no-footer {border-bottom:0;}
+table.dataTable thead th, table.table-bordered > tbody > tr > td { border-left:0; border-bottom:0; border-right:0; border-color: #dfe2e5; padding:16px 25px; font-size:15px; font-family:arial; }
+table.table th { border-top:0;}
+table.dataTable.no-footer {border-bottom: 1px solid #dfe2e5; border-color: #dfe2e5; border-radius: 4px;}
+table td a svg{width:17px;}
+table.table-bordered > tbody > tr > td:last-child {text-align: left;}
+.dataTables_filter input {border-radius:4px;}
+
+.dataTables_wrapper span { float: left; padding-top:8px;}
+table#myTable { margin: 10px 0 0;  float: left; width: 1024px !important}
+div#myTable_paginate { margin-top:18px; border: 1px solid #dfe2e5; border-radius: 3px; padding:0; height:38px;}
+a#myTable_previous, a#myTable_next {
+    padding: 6px 15px;
+    margin-left: 0;
+    font-size: 0;
+    position: relative;
+    display: inline-block;
+    border: 0!important;
+}
+#myTable_paginate span { float:none; display:inline-block; padding:0; border-left:1px solid #dfe2e5; border-right:1px solid #dfe2e5; }
+a#myTable_next:before {
+  content: '';
+  border-top:8px solid transparent;
+  border-bottom:8px solid transparent;  
+  border-left:8px solid #c6c2c2;
+  position:relative;
+  top:-6px;
+}
+a#myTable_previous:before {
+  content: '';
+  border-top: 8px solid transparent;
+  border-bottom: 8px solid transparent;  
+  border-right:8px solid #c6c2c2; 
+  position:relative;
+  top:-6px;
+}
+.dataTables_wrapper .dataTables_paginate .paginate_button { font-weight: 600; padding:9px 15px; border-width:0 0 0 1px!important; border-color:#dfe2e5; border-style:solid; color:#9a9fa8; border-radius:0; }
+.dataTables_wrapper .dataTables_paginate .paginate_button:last-child { border-right-width:1px;}
+.dataTables_wrapper .dataTables_paginate .paginate_button.current, .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+  border-radius: 0; color:#354052;
+  background: transparent;
+  font-weight: 600;
+  border: 0;
+}
+
+/**Table**/
+.finger_table {border:1px solid #dfe2e5; border-radius:4px;}
+.finger_table th {text-align:left;}
+table.finger_table thead th { font-weight:600; color:#7f8fa4; font-size:15px; font-family:arial; text-transform:captialize;}
+table.finger_table td { font-weight:400; color:#354052; font-size:15px; border-top:1px solid #dfe2e5;}
+
+span.export_csv {float: left; display:flex; align-items:center; margin-bottom:-35px;}
+.export_csv span {font-size:12px; color:#333; font-weight:600; margin-left:7px;}
+
+#myTable_filter {float:right; font-size:14px; color:#333; margin-right:30px;}
+#myTable_filter input{float:left; border:1px solid #dfe2e5; border-radius:4px; width:235px; height:36px; font-size:14px; color:#333; margin:0; padding:4px 12px; position:relative;}
+#myTable_filter label { width:100%; float: left;position:relative; font-size:0;}
+#myTable_filter label:after {
+    content: '\e60c';
+    font-size: 1.5rem;
+	color: #41362f;
+	font-family: 'Admin Icons';
+	position:absolute;
+	right:6px;
+	top:9px;
+	-webkit-font-smoothing: antialiased;
+}
+div#myTable_length {float:right; margin-left:0;}
+div#myTable_length select { background:#fafcfc; color:#333; font-size:14px; border:1px solid #dfe2e5; border-radius:4px; padding:4px; height:36px;}
+
+table.finger_table td select { margin-right:7px; border:1px solid #dfe2e5; border-radius:4px; font-size:14px; color:#000; height: 30px; padding: 2px 6px;}
+
+table.finger_table > tbody > tr > td:last-child a {display:inline-block!important;}
+span.no-image {color: #ff0000;}
+</style>
+
+<?php } ?>

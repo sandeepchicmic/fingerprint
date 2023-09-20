@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+  <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:App/etc/routes.xsd">
+      <router id="admin">
+          <route id="adminfingerprint" frontName="adminfingerprint">
+              <module name="Smartwave_NewFingerprints"/>
+          </route>
+           <route id="adminfingerprintstatus" frontName="adminfingerprintstatus">
+              <module name="Smartwave_NewFingerprints"/>
+          </route>
+           <route id="adminfingerprintexport" frontName="adminfingerprintexport">
+              <module name="Smartwave_NewFingerprints"/>
+          </route>
+      </router>
+  </config>
+  

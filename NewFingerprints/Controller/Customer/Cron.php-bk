@@ -1,0 +1,45 @@
+<?php
+namespace Smartwave\NewFingerprints\Controller\Customer;
+
+use Magento\Framework\Controller\ResultFactory;
+use Magento\Framework\App\Action\Context;
+use Magento\Customer\Model\Session;
+use Magento\Framework\App\RequestInterface;
+use Magento\Framework\App\ResourceConnection;
+
+class Cron extends \Magento\Framework\App\Action\Action {
+
+    protected $_helper,
+              $resourceConnection;
+
+    public function __construct(
+            Context $context,
+            Session $customerSession,
+            ResourceConnection $resourceConnection
+        ) {
+
+        $this->customerSession = $customerSession;
+        $this->resourceConnection = $resourceConnection;
+        parent::__construct($context);
+    }	
+
+    public function execute() {
+        $this->extractArchives( );
+        die( 'Done' );
+    }
+    
+    private  function extractArchives(  ) {
+        $connection  = $this->resourceConnection->getConnection();
+        $table = $connection->getTableName('customer_images');
+        $archiveTable = $connection->getTableName('customer_image_archives');
+        
+        $query = "INSERT INTO `$archiveTable` SELECT * FROM `$table` WHERE `created_at` > DATE_SUB(NOW(), INTERVAL 90 DAY);";
+        $connection->query($query);
+
+        $query = "DELETE FROM `$table` WHERE `created_at` > DATE_SUB(NOW(), INTERVAL 90 DAY);";
+        $connection->query($query);
+
+        die( 'Success' );
+    }
+	
+}

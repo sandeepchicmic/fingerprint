@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+    <menu>
+        <add id="Smartwave_NewFingerprints::first_level_demo"
+             title="Fingerprints"
+             module="Smartwave_NewFingerprints"
+             sortOrder="9999"
+             action="adminfingerprint/fingerprint"
+             resource="Smartwave_NewFingerprints::content" />
+             <!--  <add id="Smartwave_NewFingerprints::second_level_demo"
+             title="Inchoo Second Level Item"
+             module="Smartwave_NewFingerprints"
+             sortOrder="0"
+            action="exampleadminnewpage/helloworld"
+             parent="Smartwave_NewFingerprints::first_level_demo"
+             resource="Magento_Backend::content" /> -->
+    </menu>
+</config>
+
+<!--  <?xml version="1.0"?>
+    <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+        <menu>
+          <add id="Smartwave_NewFingerprints::greetings" title="Greetings" translate="title" module="Smartwave_NewFingerprints" parent="Magento_Backend::content" sortOrder="50" dependsOnModule="Smartwave_NewFingerprints" resource="Smartwave_NewFingerprints::greetings"/>
+          <add id="Smartwave_NewFingerprints::greetings_helloworld" title="Hello World" translate="title" module="Smartwave_NewFingerprints" parent="Smartwave_NewFingerprints::greetings" sortOrder="10" dependsOnModule="Smartwave_NewFingerprints" action="exampleadminnewpage/helloworld" resource="Smartwave_NewFingerprints::greetings"/>
+        </menu>
+    </config> -->

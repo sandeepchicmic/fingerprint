@@ -1,0 +1,62 @@
+<?php 
+namespace Smartwave\NewFingerprints\Setup;
+use Magento\Framework\Setup\SchemaSetupInterface;
+use Magento\Framework\Setup\ModuleContextInterface;
+use Magento\Framework\DB\Ddl\Table;
+
+class UpgradeSchema implements \Magento\Framework\Setup\UpgradeSchemaInterface{
+ 
+	public function upgrade(SchemaSetupInterface $setup,ModuleContextInterface $context){
+        $installer = $setup;
+        $installer->startSetup();
+        if (!$installer->tableExists('customer_image_archives')) {
+            $table = $installer->getConnection()->newTable(
+                            $installer->getTable('customer_image_archives')
+                        )
+                        ->addColumn(
+                            'id',
+                            \Magento\Framework\DB\Ddl\Table::TYPE_BIGINT,
+                            null,
+                            [
+                                'nullable' => false,
+                                'primary'  => true
+                            ],
+                            'Archive ID'
+                        )
+                        ->addColumn(
+                            'cust_id',
+                            \Magento\Framework\DB\Ddl\Table::TYPE_BIGINT,
+                            255,
+                            ['nullable => false'],
+                            'Customer ID'
+                        )
+                        ->addColumn(
+                            'image_name',
+                            \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+                            255,
+                            [],
+                            'Fingerprint Image'
+                        )
+                        ->addColumn(
+                            'image_date',
+                            \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+                            '255',
+                            [],
+                            'Fingerprint Date'
+                        )
+                        ->addColumn(
+                            'created_at',
+                            \Magento\Framework\DB\Ddl\Table::TYPE_DATETIME,
+                            null,
+                            ['nullable' => false],
+                            'Created At'
+                        )
+                        ->setComment('Customer Images Archive Table');
+
+                $installer->getConnection()->createTable($table);
+        }
+
+        $installer->endSetup();
+    }
+    
+}

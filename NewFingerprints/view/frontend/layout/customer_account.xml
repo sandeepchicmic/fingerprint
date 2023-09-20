@@ -1,0 +1,14 @@
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+   <body>
+      <referenceBlock name="customer_account_navigation">
+         <block class="Magento\Framework\View\Element\Html\Link\Current" name="customer-account-navigation-newfingerprints">
+            <arguments>
+               <argument name="path" xsi:type="string">newfingerprints/customer</argument>
+               <argument name="label" xsi:type="string">UPD Prints</argument>
+            </arguments>
+         </block>
+      </referenceBlock>
+      <referenceBlock name='customer-account-navigation-downloadable-products-link' remove='true'/>
+      <move element="customer-account-navigation-newfingerprints" destination="customer_account_navigation" before="customer-account-navigation-account-link"/>
+   </body>
+</page> 
